@@ -23,11 +23,11 @@ extern keymap_config_t keymap_config;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = {
     /* left hand */
-    { KC_GRV,    KC_1,     KC_2,     KC_3,     KC_4,     KC_5      },
+    { KC_EQL,    KC_1,     KC_2,     KC_3,     KC_4,     KC_5      },
     { KC_TAB,    KC_Q,     KC_W,     KC_E,     KC_R,     KC_T      },
     { KC_ESC,    KC_A,     KC_S,     KC_D,     KC_F,     KC_G      },
     { KC_LSHIFT, KC_Z,     KC_X,     KC_C,     KC_V,     KC_B      },
-    { MO(_FN),   KC_LGUI,  KC_EQL,   KC_LEFT,  KC_RIGHT, XXXXX     },
+    { MO(_FN),   KC_LGUI,  KC_GRV,   KC_LEFT,  KC_RIGHT, XXXXX     },
     { KC_LALT,   KC_END,   KC_DEL,   KC_BSPC,  KC_HOME,  KC_LCTRL  },
     /* right hand */
     { KC_6,      KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS   },
