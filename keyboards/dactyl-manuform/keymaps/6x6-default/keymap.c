@@ -23,19 +23,21 @@ extern keymap_config_t keymap_config;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = {
     /* left hand */
-    { KC_EQL,    KC_1,     KC_2,     KC_3,     KC_4,     KC_5      },
-    { KC_TAB,    KC_Q,     KC_W,     KC_E,     KC_R,     KC_T      },
-    { KC_ESC,    KC_A,     KC_S,     KC_D,     KC_F,     KC_G      },
-    { KC_LSHIFT, KC_Z,     KC_X,     KC_C,     KC_V,     KC_B      },
-    { MO(_SYM),  KC_LGUI,  KC_GRV,   KC_LEFT,  KC_RIGHT, XXXXX     },
-    { KC_LALT,   KC_END,   KC_DEL,   KC_BSPC,  KC_HOME,  KC_LCTRL  },
+    { KC_EQL,   KC_1,         KC_2,    KC_3     KC_4,    KC_5    },
+    { KC_TAB,   LALT_T(KC_Q), KC_W,    KC_E,    KC_R,    KC_T    },
+    { KC_ESC,   LSFT_T(KC_A), KC_S,    KC_D,    KC_F,    KC_G    },
+    { KC_LSFT,  LCTL_T(KC_Z), KC_X,    KC_C,    KC_V,    KC_B    },
+    { MO(_SYM), KC_LGUI,      KC_GRV,  KC_LEFT, KC_RGHT, XXXXX   },
+	/* left thumb */
+    { KC_LALT, KC_END, KC_TAB, LT(_SYM, KC_BSPC), KC_HOME, KC_LCTL },
     /* right hand */
-    { KC_6,      KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS   },
-    { KC_Y,      KC_U,     KC_I,     KC_O,     KC_P,     KC_BSLS   },
-    { KC_H,      KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT   },
-    { KC_N,      KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSHIFT },
-    { XXXXX,     KC_DOWN,  KC_UP,    KC_LBRC,  KC_RBRC,  MO(_SYM)  },
-    { KC_RCTRL,  KC_PGUP,  KC_SPC,   KC_ENTER, KC_PGDN,  KC_RALT   },
+    { KC_6,    KC_7,    KC_8,    KC_9,    KC_0,            KC_MINS  },
+    { KC_Y,    KC_U,    KC_I,    KC_O,    RALT_T(KC_P),    KC_BSLS  },
+    { KC_H,    KC_J,    KC_K,    KC_L,    RSFT_T(KC_SCLN), KC_QUOT  },
+    { KC_N,    KC_M,    KC_COMM, KC_DOT,  RCTL_T(KC_SLSH), KC_RSFT  },
+    { XXXXX,   KC_DOWN, KC_UP,   KC_LBRC, KC_RBRC,         MO(_SYM) },
+	/* right thumb */
+    { KC_RCTL, KC_PGUP, LT(_SYM, KC_SPC), KC_ENT, KC_PGDN, KC_RALT },
   },
   [_SYM] = {
     /* left hand */
@@ -44,14 +46,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     { _____,   KC_DLR,  KC_PERC, KCCIRC,  KC_LPRN, KC_RPRN },
     { _____,   KC_AMPR, KC_ASTR, KC_TILD, KC_LBRC, KC_RBRC },
     { _____,   RESET,   _____,   KC_HOME, KC_END,  XXXXX   },
-    { _____,   _____,   _____,   _____,   _____,   _____   },
+	/* left thumb */
+    { _____,   _____,   KC_UNDS, _____,   _____,   _____   },
     /* right hand */
     { KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_PSCR },
     { KC_PPLS, KC_P7,   KC_P8,   KC_P9,   KC_CMM,  KC_UNDS },
     { KC_PEQL, KC_P4,   KC_P5,   KC_P6,   KC_P0,   KC_GRV  },
     { KC_PMNS, KC_P1,   KC_P2,   KC_P3,   KC_DOT,  _____   },
     { XXXXX,   PC_PGDN, KC_PGUP, _____,   RESET,   _____   },
-    { _____,   _____,   _____,   _____,   _____,   _____   },
+	/* rght thumb */
+    { _____,   _____,   _____,   KC_DEL,  _____,   _____   },
   }
 };
 
