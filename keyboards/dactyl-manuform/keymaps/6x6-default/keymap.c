@@ -2,14 +2,108 @@
 #include "action_layer.h"
 #include "eeconfig.h"
 
-extern keymap_config_t keymap_config;
-
 #define _______ KC_TRNS
 #define XXXXXXX KC_NO
 
-#define _QWERTY 0
-#define _NUM 1
-#define _SYM 2
+#define QWERTY 0
+#define SYM 1
+#define FUN 2
+
+// =============================================================================
+
+enum custom_keycodes
+{
+    KC_DREF = SAFE_RANGE,
+    KC_NTEQ,
+    KC_LTEQ,
+    KC_GTEQ,
+    KC_HDIR,
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record)
+{
+    if (!record->event.pressed)
+        return true;
+
+    switch (keycode)
+    {
+        case KC_DREF:
+            SEND_STRING("->");
+            return false;
+        case KC_NTEQ:
+            SEND_STRING("!=");
+            return false;
+        case KC_LTEQ:
+            SEND_STRING("<=");
+            return false;
+        case KC_GTEQ:
+            SEND_STRING(">=");
+            return false;
+        case KC_HDIR:
+            SEND_STRING("~/");
+            return false;
+    }
+
+    return true;
+};
+
+// =============================================================================
+
+enum custom_actions
+{
+    LT_SYM_ENT,
+    LT_SYM_SPC,
+    LT_FUN_DEL,
+    LT_FUN_BSPC,
+};
+
+const uint16_t PROGMEM fn_actions[] =
+{
+    [LT_SYM_ENT]  = ACTION_MACRO_TAP(LT_SYM_ENT),
+    [LT_SYM_SPC]  = ACTION_MACRO_TAP(LT_SYM_SPC),
+    [LT_FUN_DEL]  = ACTION_MACRO_TAP(LT_FUN_DEL),
+    [LT_FUN_BSPC] = ACTION_MACRO_TAP(LT_FUN_BSPC),
+};
+
+void switch_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
+{
+    if (record->event.pressed)
+    {
+        if (record->tap.count && !record->tap.interrupted)
+            register_code(keycode);
+        else
+            layer_on(layer);
+    }
+    else
+    {
+        if(record->tap.count && !record->tap.interrupted)
+            unregister_code(keycode);
+        else
+            layer_off(layer);
+    }
+}
+
+const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
+{
+    switch (id)
+    {
+        case LT_SYM_ENT:
+            switch_layer(record, SYM, KC_ENT);
+            break;
+        case LT_SYM_SPC:
+            switch_layer(record, SYM, KC_SPC);
+            break;
+        case LT_FUN_DEL:
+            switch_layer(record, FUN, KC_DEL);
+            break;
+        case LT_FUN_BSPC:
+            switch_layer(record, FUN, KC_BSPC);
+            break;
+    }
+    return MACRO_NONE;
+}
+
+// =============================================================================
 
 /*              Thumb Cluster Mapping
  *         +---+ +---+        +---+ +---+
@@ -22,65 +116,65 @@ extern keymap_config_t keymap_config;
  */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_QWERTY] = {
-    /* left hand */
-    { KC_EQL,   KC_1,         KC_2,     KC_3     KC_4,    KC_5    },
-    { KC_TAB,   LALT_T(KC_Q), KC_W,     KC_E,    KC_R,    KC_T    },
-    { KC_ESC,   LSFT_T(KC_A), KC_S,     KC_D,    KC_F,    KC_G    },
-    { KC_LSFT,  LCTL_T(KC_Z), KC_X,     KC_C,    KC_V,    KC_B    },
-    { KC_LGUI,  MO(_NUM),     MO(_SYM), KC_LEFT, KC_RGHT, XXXXXXX },
-	/* left thumb */
-    { KC_LALT, KC_ESC, LT(_SYM, KC_DEL), LT(_NUM, KC_BSPC), KC_CAPS, KC_LCTL },
-    /* right hand */
-    { KC_6,    KC_7,    KC_8,    KC_9,     KC_0,            KC_MINS },
-    { KC_Y,    KC_U,    KC_I,    KC_O,     RALT_T(KC_P),    KC_BSLS },
-    { KC_H,    KC_J,    KC_K,    KC_L,     RSFT_T(KC_SCLN), KC_QUOT },
-    { KC_N,    KC_M,    KC_COMM, KC_DOT,   RCTL_T(KC_SLSH), KC_RSFT },
-    { XXXXXXX, KC_DOWN, KC_UP,   MO(_SYM), MO(_NUM),        KC_RGUI },
-	/* right thumb */
-    { KC_RCTL, KC_NLCK, LT(_NUM, KC_SPC), LT(_SYM, KC_ENT), KC_TAB, KC_RALT },
-  },
-  [_NUM] = {
-    /* left hand */
-    { _______, _______, _______, _______, _______, _______ },
-    { _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_PAST },
-    { _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_DLR  },
-    { _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PSLS },
-    { _______, _______, _______, KC_HOME, KC_END,  XXXXXXX },
-	/* left thumb */
-    { RESET, _______, _____,  _______, _______, _______ },
-    /* right hand */
-    { _______, _______, _______, _______, _______, _______ },
-    { KC_PPLS, KC_P7,   KC_P8,   KC_P9,   KC_CMM,  _______ },
-    { KC_PEQL, KC_P4,   KC_P5,   KC_P6,   KC_P0,   _______ },
-    { KC_PMNS, KC_P1,   KC_P2,   KC_P3,   KC_DOT,  _______ },
-    { XXXXXXX, PC_PGDN, KC_PGUP, _______, _______, _______ },
-	/* rght thumb */
-    { _______, _______, _______, _______, _______, RESET },
-  },
-  [_SYM] = {
-    /* left hand */
-    { _______, _______, _______, _______, _______, _______ },
-    { _______, KC_EXLM, KC_AT,   KC_HASH, KC_PERC, KC_ASTR },
-    { _______, KC_CIRC, KC_AMPR, KC_LBRC, KC_RBRC, KC_DLR  },
-    { _______, UC(168), KC_TILD, KC_LABK, KC_RABK, KC_SLSH },
-    { _______, _______, _______, KC_HOME, KC_END,  XXXXXXX },
-	/* left thumb */
-    { RESET, _______, _______, _______, _______, _______ },
-    /* right hand */
-    { _______, _______, _______, _______, _______, _______ },
-    { KC_PLUS, KC_DQUO, KC_QUOT, KC_GRAV, KC_BSLS, _______ },
-    { KC_EQL,  KC_LPRN, KC_RPRN, KC_UNDS, KC_COLN, _______ },
-    { KC_MINS, KC_LCBR, KC_RCBR, KC_PIPE, KC_QUES, _______ },
-    { XXXXXXX, PC_PGDN, KC_PGUP, _______, _______, _______ },
-	/* rght thumb */
-    { _______, _______, _______, _______, _______, RESET },
-  }
+    [QWERTY] = {
+        /* left hand */
+        { KC_EQL,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5    },
+        { KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T    },
+        { KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G    },
+        { KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B    },
+        { KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT, XXXXXXX },
+        /* left thumb */
+        { KC_LALT, TG(SYM), F(LT_FUN_DEL), F(LT_SYM_ENT), KC_LGUI, KC_LCTRL },
+        /* right hand */
+        { KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS },
+        { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS },
+        { KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT },
+        { KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT },
+        { XXXXXXX, KC_DOWN, KC_UP,   KC_RALT, KC_APP,  KC_RCTL },
+        /* right thumb */
+        { KC_RCTL, KC_APP,  F(LT_SYM_SPC), F(LT_FUN_BSPC), TG(FUN), KC_RALT },
+    },
+    [SYM] = {
+        /* left hand */
+        { _______, _______, _______, _______, _______, _______ },
+        { KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
+        { KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_UNDS, KC_LPRN },
+        { KC_GRV,  KC_PLUS, KC_MINS, KC_EQL,  KC_DQUO, KC_LBRC },
+        { _______, _______, _______, KC_HOME, KC_END,  XXXXXXX },
+        /* left thumb */
+        { _______, _______, _______, _______, _______, _______ },
+        /* right hand */
+        { _______, _______, _______, _______, _______, _______ },
+        { KC_RCBR, KC_P7,   KC_P8,   KC_P9,   KC_COMM, _______ },
+        { KC_RPRN, KC_P4,   KC_P5,   KC_P6,   KC_P0,   _______ },
+        { KC_RBRC, KC_P1,   KC_P2,   KC_P3,   KC_PDOT, _______ },
+        { XXXXXXX, KC_PGUP, KC_PGDN, _______, _______, _______ },
+        /* rght thumb */
+        { _______, _______, _______, _______, _______, _______ },
+    },
+    [FUN] = {
+        /* left hand */
+        { _______, _______, _______, _______, _______, _______ },
+        { KC_NLCK, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_PAUS },
+        { KC_CAPS, KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_PSCR },
+        { KC_SLCK, KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_INS  },
+        { _______, _______, _______, KC_HOME, KC_END, XXXXXXX },
+        /* left thumb */
+        { RESET,   _______, _______, _______, _______, _______ },
+        /* right hand */
+        { _______, _______, _______, _______, _______, _______ },
+        { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______ },
+        { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______ },
+        { KC_DREF, KC_NTEQ, KC_LTEQ, KC_GTEQ, KC_HDIR, _______ },
+        { XXXXXXX, KC_PGUP, KC_PGDN, _______, _______, _______ },
+        /* rght thumb */
+        { _______, _______, _______, _______, _______, RESET   },
+    }
 };
 
 void persistant_default_layer_set(uint16_t default_layer)
 {
-  eeconfig_update_default_layer(default_layer);
-  default_layer_set(default_layer);
+    eeconfig_update_default_layer(default_layer);
+    default_layer_set(default_layer);
 }
 
