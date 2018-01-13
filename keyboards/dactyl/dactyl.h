@@ -1,5 +1,5 @@
-#ifndef DACTYL_MANUFORM_H
-#define DACTYL_MANUFORM_H
+#ifndef DACTYL_H
+#define DACTYL_H
 
 #include "config.h"
 

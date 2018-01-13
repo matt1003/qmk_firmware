@@ -1,4 +1,4 @@
-#include "dactyl-manuform.h"
+#include "dactyl.h"
 #include "action_layer.h"
 #include "eeconfig.h"
 
