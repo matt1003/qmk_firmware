@@ -14,6 +14,7 @@
 enum custom_keycodes
 {
     KC_DREF = SAFE_RANGE,
+    KC_EQEQ,
     KC_NTEQ,
     KC_LTEQ,
     KC_GTEQ,
@@ -29,6 +30,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     {
         case KC_DREF:
             SEND_STRING("->");
+            return false;
+        case KC_EQEQ:
+            SEND_STRING("==");
             return false;
         case KC_NTEQ:
             SEND_STRING("!=");
@@ -132,23 +136,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT },
         { XXXXXXX, KC_DOWN, KC_UP,   KC_RALT, KC_APP,  KC_RCTL },
         /* right thumb */
-        { KC_RCTL, KC_APP,  F(LT_SYM_SPC), F(LT_FUN_BSPC), TG(FUN), KC_RALT },
+        { KC_RCTL, KC_CAPS, F(LT_SYM_SPC), F(LT_FUN_BSPC), TG(FUN), KC_RALT },
     },
     [SYM] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
         { KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_UNDS, KC_LPRN },
-        { KC_GRV,  KC_PLUS, KC_MINS, KC_EQL,  KC_DQUO, KC_LBRC },
+        { KC_GRV,  KC_PLUS, KC_EQL,  KC_MINS, KC_DQUO, KC_LBRC },
         { _______, _______, _______, KC_HOME, KC_END,  XXXXXXX },
         /* left thumb */
         { _______, _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_RCBR, KC_P7,   KC_P8,   KC_P9,   KC_COMM, _______ },
-        { KC_RPRN, KC_P4,   KC_P5,   KC_P6,   KC_P0,   _______ },
-        { KC_RBRC, KC_P1,   KC_P2,   KC_P3,   KC_PDOT, _______ },
-        { XXXXXXX, KC_PGUP, KC_PGDN, _______, _______, _______ },
+        { KC_RCBR, KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
+        { KC_RPRN, KC_4,    KC_5,    KC_6,    KC_0,    _______ },
+        { KC_RBRC, KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
+        { XXXXXXX, KC_PGDN, KC_PGUP, _______, _______, _______ },
         /* rght thumb */
         { _______, _______, _______, _______, _______, _______ },
     },
@@ -164,9 +168,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______ },
-        { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______ },
-        { KC_DREF, KC_NTEQ, KC_LTEQ, KC_GTEQ, KC_HDIR, _______ },
-        { XXXXXXX, KC_PGUP, KC_PGDN, _______, _______, _______ },
+        { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_DREF, _______ },
+        { KC_EQEQ, KC_NTEQ, KC_LTEQ, KC_GTEQ, KC_HDIR, _______ },
+        { XXXXXXX, KC_PGDN, KC_PGUP, _______, _______, _______ },
         /* rght thumb */
         { _______, _______, _______, _______, _______, RESET   },
     }
