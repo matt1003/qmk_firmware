@@ -57,33 +57,31 @@ enum custom_actions
 {
     LT_SYM_ENT,
     LT_SYM_SPC,
-    LT_FUN_DEL,
-    LT_FUN_BSPC,
 };
 
 const uint16_t PROGMEM fn_actions[] =
 {
     [LT_SYM_ENT]  = ACTION_MACRO_TAP(LT_SYM_ENT),
     [LT_SYM_SPC]  = ACTION_MACRO_TAP(LT_SYM_SPC),
-    [LT_FUN_DEL]  = ACTION_MACRO_TAP(LT_FUN_DEL),
-    [LT_FUN_BSPC] = ACTION_MACRO_TAP(LT_FUN_BSPC),
 };
 
-void switch_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
+void switch_layer(keyrecord_t *record, uint16_t keycode)
 {
+    static uint8_t layer = QWERTY;
+
     if (record->event.pressed)
     {
         if (record->tap.count && !record->tap.interrupted)
             register_code(keycode);
         else
-            layer_on(layer);
+            layer_on(++layer);
     }
     else
     {
         if(record->tap.count && !record->tap.interrupted)
             unregister_code(keycode);
         else
-            layer_off(layer);
+            layer_off(layer--);
     }
 }
 
@@ -92,16 +90,10 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     switch (id)
     {
         case LT_SYM_ENT:
-            switch_layer(record, SYM, KC_ENT);
+            switch_layer(record, KC_ENT);
             break;
         case LT_SYM_SPC:
-            switch_layer(record, SYM, KC_SPC);
-            break;
-        case LT_FUN_DEL:
-            switch_layer(record, FUN, KC_DEL);
-            break;
-        case LT_FUN_BSPC:
-            switch_layer(record, FUN, KC_BSPC);
+            switch_layer(record, KC_SPC);
             break;
     }
     return MACRO_NONE;
@@ -119,24 +111,29 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
  *   +---+ +---+ +---+        +---+ +---+ +---+
  */
 
+#define LSFT_Z LSFT_T(KC_Z)
+#define RSFT_SL RSFT_T(KC_SLSH)
+#define SYM_ENT F(LT_SYM_ENT)
+#define SYM_SPC F(LT_SYM_SPC)
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [QWERTY] = {
         /* left hand */
-        { KC_EQL,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5    },
+        { _______, _______, _______, _______, _______, _______ },
         { KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T    },
         { KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G    },
-        { KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B    },
-        { KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT, XXXXXXX },
+        { KC_LSFT, LSFT_Z,  KC_X,    KC_C,    KC_V,    KC_B    },
+        { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { KC_LALT, TG(SYM), F(LT_FUN_DEL), F(LT_SYM_ENT), KC_LGUI, KC_LCTRL },
+        { KC_LALT, _______, KC_DEL, SYM_ENT,  _______, KC_LCTL },
         /* right hand */
-        { KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS },
+        { _______, _______, _______, _______, _______, _______ },
         { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS },
         { KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT },
-        { KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT },
-        { XXXXXXX, KC_DOWN, KC_UP,   KC_RALT, KC_APP,  KC_RCTL },
+        { KC_N,    KC_M,    KC_COMM, KC_DOT,  RSFT_SL, KC_RSFT },
+        { XXXXXXX, _______, _______, _______, _______, _______ },
         /* right thumb */
-        { KC_RCTL, KC_CAPS, F(LT_SYM_SPC), F(LT_FUN_BSPC), TG(FUN), KC_RALT },
+        { KC_RCTL, _______, SYM_SPC, KC_BSPC, _______, KC_RGUI },
     },
     [SYM] = {
         /* left hand */
@@ -144,17 +141,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
         { KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_UNDS, KC_LPRN },
         { KC_GRV,  KC_PLUS, KC_EQL,  KC_MINS, KC_DQUO, KC_LBRC },
-        { _______, _______, _______, KC_HOME, KC_END,  XXXXXXX },
+        { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_RCBR, KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
         { KC_RPRN, KC_4,    KC_5,    KC_6,    KC_0,    _______ },
         { KC_RBRC, KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
-        { XXXXXXX, KC_PGDN, KC_PGUP, _______, _______, _______ },
+        { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { _______, _______, _______, _______, _______, RESET   },
     },
     [FUN] = {
         /* left hand */
@@ -162,15 +159,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_NLCK, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_PAUS },
         { KC_CAPS, KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_PSCR },
         { KC_SLCK, KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_INS  },
-        { _______, _______, _______, KC_HOME, KC_END, XXXXXXX },
+        { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______ },
+        { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_APP,  _______ },
         { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_DREF, _______ },
         { KC_EQEQ, KC_NTEQ, KC_LTEQ, KC_GTEQ, KC_HDIR, _______ },
-        { XXXXXXX, KC_PGDN, KC_PGUP, _______, _______, _______ },
+        { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
         { _______, _______, _______, _______, _______, RESET   },
     }
