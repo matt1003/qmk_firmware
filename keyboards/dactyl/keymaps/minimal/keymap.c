@@ -111,8 +111,10 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
  *   +---+ +---+ +---+        +---+ +---+ +---+
  */
 
-#define LSFT_Z LSFT_T(KC_Z)
-#define RSFT_SL RSFT_T(KC_SLSH)
+#define SFT_Z LSFT_T(KC_Z)
+#define CTL_X LCTL_T(KC_X)
+#define CTL_DOT RCTL_T(KC_DOT)
+#define SFT_SLS RSFT_T(KC_SLSH)
 #define SYM_ENT F(LT_SYM_ENT)
 #define SYM_SPC F(LT_SYM_SPC)
 
@@ -122,7 +124,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, _______, _______, _______, _______, _______ },
         { KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T    },
         { KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G    },
-        { KC_LSFT, LSFT_Z,  KC_X,    KC_C,    KC_V,    KC_B    },
+        { KC_LSFT, SFT_Z,   CTL_X,   KC_C,    KC_V,    KC_B    },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { KC_LALT, _______, KC_DEL, SYM_ENT,  _______, KC_LCTL },
@@ -130,7 +132,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, _______, _______, _______, _______, _______ },
         { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS },
         { KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT },
-        { KC_N,    KC_M,    KC_COMM, KC_DOT,  RSFT_SL, KC_RSFT },
+        { KC_N,    KC_M,    KC_COMM, CTL_DOT, SFT_SLS, KC_RSFT },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* right thumb */
         { KC_RCTL, _______, SYM_SPC, KC_BSPC, _______, KC_RGUI },
