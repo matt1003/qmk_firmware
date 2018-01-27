@@ -75,24 +75,24 @@ void switch_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
         if (record->tap.count && !record->tap.interrupted)
             register_code(keycode);
         else
-		{
+        {
             layer_on(layer);
-			if (count == 1)
-			   layer_on(FUN);
-			count++;
-		}
+            if (count == 1)
+               layer_on(FUN);
+            count++;
+        }
     }
     else
     {
         if(record->tap.count && !record->tap.interrupted)
             unregister_code(keycode);
         else
-		{
+        {
             layer_off(layer);
-			if (count == 2)
-			   layer_off(FUN);
-			count--;
-		}
+            if (count == 2)
+               layer_off(FUN);
+            count--;
+        }
     }
 }
 
@@ -153,7 +153,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, _______, _______, _______, _______, _______ },
         { _______, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
         { _______, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN },
-        { _______, KC_TILD,  KC_PLUS, KC_EQL, KC_MINS, KC_LBRC },
+        { _______, KC_TILD, KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { RESET,   _______, KC_ESC,  _______, _______, _______ },
@@ -169,17 +169,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [NUM] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, _______, _______, _______, _______, _______ },
-        { _______, _______, _______, _______, _______, _______ },
-        { _______, _______, _______, _______, _______, _______ },
+        { _______, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
+        { _______, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN },
+        { _______, KC_TILD, KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { RESET,   _______, KC_ESC,  _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
-        { _______, KC_4,    KC_5,    KC_6,    KC_0,    _______ },
-        { _______, KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
+        { KC_RCBR, KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
+        { KC_RPRN, KC_4,    KC_5,    KC_6,    KC_0,    _______ },
+        { KC_RBRC, KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
         { _______, _______, _______, KC_DEL,  _______, RESET   },
@@ -195,7 +195,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_LTEQ, KC_GTEQ, KC_EQEQ, KC_NTEQ, KC_PAUS, _______ },
+        { KC_EQEQ, KC_LTEQ, KC_GTEQ, KC_NTEQ, KC_PAUS, _______ },
         { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_INS,  _______ },
         { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_APP,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
