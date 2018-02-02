@@ -56,19 +56,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 
 enum custom_actions
 {
-    LT_NUM_ENT,
-    LT_SYM_SPC,
+    LT_NUM_TAB, // number layer when held, tab when pressed
+    LT_SYM_BSP, // symbol layer when held, back-space when pressed
+    LT_SFT_ENT, // shift when held, enter when pressed
+    LT_CTL_SPC, // control when held, space when pressed
 };
 
 const uint16_t PROGMEM fn_actions[] =
 {
-    [LT_NUM_ENT]  = ACTION_MACRO_TAP(LT_NUM_ENT),
-    [LT_SYM_SPC]  = ACTION_MACRO_TAP(LT_SYM_SPC),
+    [LT_NUM_TAB] = ACTION_MACRO_TAP(LT_NUM_TAB),
+    [LT_SYM_BSP] = ACTION_MACRO_TAP(LT_SYM_BSP),
+    [LT_SFT_ENT] = ACTION_MACRO_TAP(LT_SFT_ENT),
+    [LT_CTL_SPC] = ACTION_MACRO_TAP(LT_CTL_SPC),
 };
 
 void switch_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
 {
-    uint8_t count = 0;
+    static int count = 0;
 
     if (record->event.pressed)
     {
@@ -96,17 +100,64 @@ void switch_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
     }
 }
 
+void switch_modifier(keyrecord_t *record, uint16_t modifier, uint16_t keycode)
+{
+    static int count = 0;
+
+    if (record->event.pressed)
+    {
+        if (count == 0)
+        {
+            if (record->tap.count && !record->tap.interrupted)
+                register_code(keycode);
+            else
+            {
+                register_code(modifier);
+                count++;
+            }
+        }
+        else
+        {
+            register_code(KC_MINS);
+            count++;
+        }
+    }
+    else
+    {
+        if (count == 2)
+        {
+            unregister_code(KC_MINS);
+            count--;
+        }
+        else
+        {
+            if(record->tap.count && !record->tap.interrupted)
+                unregister_code(keycode);
+            else
+            {
+                unregister_code(modifier);
+                count--;
+            }
+        }
+    }
+}
+
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
     switch (id)
     {
-        case LT_NUM_ENT:
-            switch_layer(record, NUM, KC_ENT);
+        case LT_NUM_TAB:
+            switch_layer(record, NUM, KC_TAB);
             break;
-        case LT_SYM_SPC:
-            switch_layer(record, SYM, KC_SPC);
+        case LT_SYM_BSP:
+            switch_layer(record, SYM, KC_BSPC);
             break;
-    }
+        case LT_SFT_ENT:
+            switch_modifier(record, KC_LSFT, KC_ENT);
+            break;
+        case LT_CTL_SPC:
+            switch_modifier(record, KC_RCTL, KC_SPC);
+            break;    }
     return MACRO_NONE;
 }
 
@@ -122,31 +173,24 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
  *   +---+ +---+ +---+        +---+ +---+ +---+
  */
 
-#define SFT_Z LSFT_T(KC_Z)
-#define CTL_X LCTL_T(KC_X)
-#define CTL_DOT RCTL_T(KC_DOT)
-#define SFT_SLS RSFT_T(KC_SLSH)
-#define NUM_ENT F(LT_NUM_ENT)
-#define SYM_SPC F(LT_SYM_SPC)
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [QWERTY] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T    },
-        { _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G    },
-        { _______, SFT_Z,   CTL_X,   KC_C,    KC_V,    KC_B    },
+        { KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T    },
+        { KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G    },
+        { KC_LSFT,LCTL_T(KC_Z),KC_X, KC_C,    KC_V,    KC_B    },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { KC_LALT, _______, KC_TAB, NUM_ENT,  _______, KC_LCTL },
+        { _______, LALT_T(KC_ESC), F(LT_NUM_TAB), F(LT_SFT_ENT), _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______ },
-        { KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______ },
-        { KC_N,    KC_M,    KC_COMM, CTL_DOT, SFT_SLS, _______ },
+        { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS },
+        { KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT },
+        { KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* right thumb */
-        { KC_RCTL, _______, SYM_SPC, KC_BSPC, _______, KC_RGUI },
+        { _______, _______, F(LT_CTL_SPC), F(LT_SYM_BSP), RGUI_T(KC_DEL), _______ },
     },
     [SYM] = {
         /* left hand */
@@ -156,25 +200,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, KC_TILD, KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { RESET,   _______, KC_ESC,  _______, _______, _______ },
+        { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_RCBR, KC_LT,   KC_GT,   KC_DREF, KC_BSLS, _______ },
+        { KC_RCBR, KC_UNDS, KC_HDIR, KC_DREF, KC_BSLS, _______ },
         { KC_RPRN, KC_DQUO, KC_QUOT, KC_GRV,  KC_COLN, _______ },
-        { KC_RBRC, KC_UNDS, KC_PIPE, KC_HDIR, KC_QUES, _______ },
+        { KC_RBRC, KC_PIPE, KC_LT,   KC_GT,   KC_QUES, _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, KC_DEL,  _______, RESET   },
+        { _______, _______, _______, _______, _______, RESET   },
     },
     [NUM] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_LCBR },
-        { _______, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN },
-        { _______, KC_TILD, KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC },
+        { _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_LCBR },
+        { _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_LPRN },
+        { _______, KC_EQEQ, KC_LTEQ, KC_GTEQ, KC_NTEQ, KC_LBRC },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { RESET,   _______, KC_ESC,  _______, _______, _______ },
+        { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_RCBR, KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
@@ -182,22 +226,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_RBRC, KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, KC_DEL,  _______, RESET   },
+        { _______, _______, KC_UNDS, _______, _______, RESET   },
     },
     [FUN] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_CAPS },
-        { _______, KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_PSCR },
-        { _______, KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_SLCK },
+        { _______, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_PGUP },
+        { _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN },
+        { _______, KC_EQEQ, KC_LTEQ, KC_GTEQ, KC_NTEQ, KC_LBRC },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { RESET,   _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_EQEQ, KC_LTEQ, KC_GTEQ, KC_NTEQ, KC_PAUS, _______ },
-        { KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_INS,  _______ },
-        { KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_APP,  _______ },
+        { KC_CAPS, KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______ },
+        { KC_PSCR, KC_F5,   KC_F6,   KC_F7,   KC_F8,   _______ },
+        { KC_SLCK, KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
         { _______, _______, _______, _______, _______, RESET   },
