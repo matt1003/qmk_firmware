@@ -6,9 +6,9 @@
 #define XXXXXXX KC_NO
 
 #define _QWERTY 0
-#define _COLEMAK 1
-#define _LOWER 2
-#define _RAISE 3
+#define _NORMAN 1
+#define _LOWER  2
+#define _RAISE  3
 #define _ADJUST 4
 
 // =============================================================================
@@ -16,6 +16,8 @@
 enum custom_keycodes
 {
     KC_DREF = SAFE_RANGE,
+    KC_QWERTY,
+    KC_NORMAN,
     KC_EQEQ,
     KC_NTEQ,
     KC_LTEQ,
@@ -30,6 +32,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 
     switch (keycode)
     {
+        case KC_QWERTY:
+            default_layer_set(1UL<<_QWERTY);
+            return false;
+        case KC_NORMAN:
+            default_layer_set(1UL<<_NORMAN);
+            return false;
         case KC_DREF:
             SEND_STRING("->");
             return false;
@@ -151,10 +159,10 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     switch (id)
     {
         case LOWER:
-            select_layer(record, _LOWER, KC_BSPC);
+            select_layer(record, _LOWER, KC_TAB);
             break;
         case RAISE:
-            select_layer(record, _RAISE, KC_TAB);
+            select_layer(record, _RAISE, KC_BSPC);
             break;
         case CNRTL:
             select_modifier(record, KC_RCTL, KC_SPC);
@@ -187,7 +195,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______,LSFT_T(KC_Z),KC_X, KC_C,    KC_V,    KC_B    },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { RESET, LALT_T(KC_DEL), F(LOWER), F(CNRTL), KC_NO, TG(_COLEMAK)},
+        { _______, LALT_T(KC_ESC), F(LOWER), F(CNRTL), KC_NO, _______},
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______ },
@@ -195,22 +203,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* right thumb */
-        { TG(_COLEMAK), KC_NO, F(SHIFT), F(RAISE), RGUI_T(KC_ESC), RESET },
+        { _______, KC_NO, F(SHIFT), F(RAISE), RGUI_T(KC_DEL), _______ },
     },
-    [_COLEMAK] = {
+    [_NORMAN] = {
         /* left hand */
         { _______, _______, _______, _______, _______, _______ },
-        { _______, KC_Q,    KC_W,    KC_F,    KC_P,    KC_G    },
-        { _______, KC_A,    KC_R,    KC_S,    KC_T,    KC_D    },
+        { _______, KC_Q,    KC_W,    KC_D,    KC_F,    KC_K    },
+        { _______, KC_A,    KC_S,    KC_E,    KC_T,    KC_G    },
         { _______,LSFT_T(KC_Z),KC_X, KC_C,    KC_V,    KC_B    },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
         { _______, _______, _______, _______, _______, _______ },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
-        { KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, _______ },
-        { KC_H,    KC_N,    KC_E,    KC_I,    KC_O,    _______ },
-        { KC_K,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______ },
+        { KC_J,    KC_U,    KC_R,    KC_L,    KC_SCLN, _______ },
+        { KC_Y,    KC_N,    KC_I,    KC_O,    KC_H,    _______ },
+        { KC_P,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* right thumb */
         { _______, _______, _______, _______, _______, _______ },
@@ -223,7 +231,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, KC_TILD, KC_PLUS, KC_MINS, KC_EQL,  KC_NO   },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { RESET, _______, _______, _______, _______, KC_QWERTY },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_NO,   KC_7,    KC_8,    KC_9,    KC_COMM, _______ },
@@ -231,7 +239,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_NO,   KC_1,    KC_2,    KC_3,    KC_DOT,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { KC_NORMAN, _______, _______, _______, _______, RESET },
     },
     [_RAISE] = {
         /* left hand */
@@ -241,7 +249,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, KC_BSLS, KC_PIPE, KC_QUOT, KC_DQUO, KC_NO   },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { RESET, _______, _______, _______, _______, KC_QWERTY },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_NO,   KC_NO,   KC_LCBR, KC_RCBR, KC_GRV,  _______ },
@@ -249,7 +257,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_NO,   KC_NO,   KC_LBRC, KC_RBRC, KC_HDIR, _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { KC_NORMAN, _______, _______, _______, _______, RESET },
     },
     [_ADJUST] = {
         /* left hand */
@@ -259,7 +267,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { _______, KC_EQEQ, KC_LTEQ, KC_GTEQ, KC_NTEQ, KC_NO   },
         { _______, _______, _______, _______, _______, XXXXXXX },
         /* left thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { RESET, _______, _______, _______, _______, KC_QWERTY },
         /* right hand */
         { _______, _______, _______, _______, _______, _______ },
         { KC_NO,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   _______ },
@@ -267,7 +275,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         { KC_NO,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______ },
         { XXXXXXX, _______, _______, _______, _______, _______ },
         /* rght thumb */
-        { _______, _______, _______, _______, _______, _______ },
+        { KC_NORMAN, _______, _______, _______, _______, RESET },
     }
 };
 
