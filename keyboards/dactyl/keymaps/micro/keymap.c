@@ -111,15 +111,18 @@ void select_layer(keyrecord_t *record, uint8_t layer, uint16_t keycode)
 
 void select_modifier(keyrecord_t *record, uint16_t modifier, uint16_t keycode)
 {
-    static bool shift = false;
     static bool underscore = false;
+    static bool shift_pressed = false;
+    static uint32_t shift_release_timer = 0;
 
     if (record->event.pressed)
     {
         if (record->tap.count && !record->tap.interrupted)
         {
-            if (shift && keycode == KC_SPC)
+            if (keycode == KC_SPC && (shift_pressed || timer_elapsed32(shift_release_timer) < 200))
             {
+                if (!shift_pressed)
+                    register_code(KC_RSFT);
                 register_code(KC_MINS);
                 underscore = true;
             }
@@ -129,7 +132,7 @@ void select_modifier(keyrecord_t *record, uint16_t modifier, uint16_t keycode)
         else
         {
             if (modifier == KC_LSFT || modifier == KC_RSFT)
-                shift = true;
+                shift_pressed = true;
             register_code(modifier);
         }
     }
@@ -137,10 +140,12 @@ void select_modifier(keyrecord_t *record, uint16_t modifier, uint16_t keycode)
     {
         if(record->tap.count && !record->tap.interrupted)
         {
-            if (underscore && keycode == KC_SPC)
+            if (keycode == KC_SPC && underscore)
             {
                 unregister_code(KC_MINS);
                 underscore = false;
+                if (!shift_pressed)
+                    unregister_code(KC_RSFT);
             }
             else
                 unregister_code(keycode);
@@ -148,7 +153,10 @@ void select_modifier(keyrecord_t *record, uint16_t modifier, uint16_t keycode)
         else
         {
             if (modifier == KC_LSFT || modifier == KC_RSFT)
-                shift = false;
+            {
+                shift_release_timer = timer_read32();
+                shift_pressed = false;
+            }
             unregister_code(modifier);
         }
     }
@@ -165,10 +173,10 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
             select_layer(record, _RAISE, KC_BSPC);
             break;
         case CNRTL:
-            select_modifier(record, KC_RCTL, KC_SPC);
+            select_modifier(record, KC_LCTL, KC_SPC);
             break;
         case SHIFT:
-            select_modifier(record, KC_LSFT, KC_ENT);
+            select_modifier(record, KC_RSFT, KC_ENT);
             break;
     }
     return MACRO_NONE;
